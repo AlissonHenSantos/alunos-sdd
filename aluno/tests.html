@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Testes</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; }
+    li { list-style: none; padding: .3rem 0; }
+    .ok { color: #1a7f37; } .falha { color: #c62828; }
+    small { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Testes</h1>
+  <p id="resumo"></p>
+  <ul id="lista"></ul>
+
+  <script>
+    const resultados = [];
+    function test(nome, fn) {
+      try { fn(); resultados.push({ nome, ok: true }); }
+      catch (e) { resultados.push({ nome, ok: false, erro: e.message }); }
+    }
+    function assertTrue(cond, msg) { if (!cond) throw new Error(msg || "condição falsa"); }
+    function assertEqual(atual, esperado, msg) {
+      if (atual !== esperado)
+        throw new Error((msg ? msg + ": " : "") +
+          "esperado " + JSON.stringify(esperado) + ", recebido " + JSON.stringify(atual));
+    }
+    function assertDeepEqual(atual, esperado, msg) {
+      assertEqual(JSON.stringify(atual), JSON.stringify(esperado), msg);
+    }
+  </script>
+  <script src="data.js"></script>
+  <script src="logic.js"></script>
+  <script src="tests.js"></script>
+  <script>
+    const lista = document.getElementById("lista");
+    resultados.forEach(r => {
+      const li = document.createElement("li");
+      li.className = r.ok ? "ok" : "falha";
+      li.innerHTML = (r.ok ? "✅ " : "❌ ") + r.nome + (r.erro ? "<br><small>" + r.erro + "</small>" : "");
+      lista.appendChild(li);
+    });
+    const passou = resultados.filter(r => r.ok).length;
+    document.getElementById("resumo").textContent = passou + " de " + resultados.length + " testes passando";
+  </script>
+</body>
+</html>
